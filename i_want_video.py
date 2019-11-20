@@ -116,7 +116,7 @@ class GiveMeVideo:
 
     def create_face_dataset(self, folder_path, user_name):
         iter = 1
-        while iter < 200:
+        while iter < 1000:
             frame, mark_face = GiveMeVideo.get_one_frame(self)
             path_to_img = folder_path + user_name + '.' + str(iter) + '.jpg'
             if mark_face:
