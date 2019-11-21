@@ -1,6 +1,9 @@
 import numpy as np
 import cv2 as cv
 from mtcnn.mtcnn import MTCNN
+from keras.preprocessing import image
+from keras.models import load_model
+from keras.applications.vgg19 import decode_predictions
 
 
 def rotate_img(img, angle, center):
@@ -124,5 +127,21 @@ class GiveMeVideo:
                 print(iter)
                 iter += 1
 
-
-
+    def face_recognition(self):
+        model = load_model('face_recognition.h5')
+        while True:
+            frame, mark_face = GiveMeVideo.get_one_frame(self)
+            cv.imshow('Video', frame)
+            frame = cv.resize(frame, (224, 224))
+            img_array = image.img_to_array(frame)
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array /= 255.
+            preds = model.predict(img_array)
+            if np.max(preds) < 0.1:
+                print("I don't know")
+            else:
+                print(np.argmax(preds))
+            if cv.waitKey(1) & 0xFF == ord('q'):
+                break
+        self.cap.release()
+        cv.destroyAllWindows()
