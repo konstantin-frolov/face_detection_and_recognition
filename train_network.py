@@ -17,7 +17,7 @@ import numpy as np
 train_dir = 'DataSet\\train'
 test_dir = 'DataSet\\test'
 val_dir = 'DataSet\\val'
-epochs = 30
+epochs = 10
 batch_size = 20
 num_train_samples = 899
 num_test_samples = 100
@@ -65,4 +65,11 @@ model.compile(loss='binary_crossentropy',
 model.fit_generator(train_gen, steps_per_epoch=num_train_samples // batch_size,
                     epochs=epochs, validation_data=val_gen, validation_steps=num_val_samples // batch_size)
 
-model.save('face_recognition.h5')
+datagen = image.ImageDataGenerator(rescale=1. / 255)
+
+
+scores = model.evaluate_generator(test_gen, num_test_samples // batch_size)
+
+print('Точность на тестовых данных составляет: %.2f%%' % (scores[1]*100))
+
+model.save('face_recognition_ep=10.h5')

@@ -128,7 +128,7 @@ class GiveMeVideo:
                 iter += 1
 
     def face_recognition(self):
-        model = load_model('face_recognition.h5')
+        model = load_model('face_recognition_ep=10.h5')
         while True:
             frame, mark_face = GiveMeVideo.get_one_frame(self)
             cv.imshow('Video', frame)
