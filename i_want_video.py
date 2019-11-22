@@ -98,8 +98,8 @@ class GiveMeVideo:
             point1 = (face[0]['box'][0], face[0]['box'][1])
             point2 = (face[0]['box'][0] + face[0]['box'][2], face[0]['box'][1] + face[0]['box'][3])
             frame = frame[point1[1] - 10:point2[1] + 10, point1[0] - 10:point2[0] + 10, :]
-            # От масштабируем под размер 300 px
-            new_width = 300
+            # масштабируем под размер 300 px
+            new_width = 224
             width = abs(point1[0] - point2[0])
             height = abs(point1[1] - point2[1])
             new_height = int(new_width * width / height)
@@ -127,7 +127,7 @@ class GiveMeVideo:
                 print(iter)
                 iter += 1
 
-    def face_recognition(self):
+    def face_recognition_test(self):
         model = load_model('face_recognition_ep=10.h5')
         while True:
             frame, mark_face = GiveMeVideo.get_one_frame(self)
@@ -145,3 +145,36 @@ class GiveMeVideo:
                 break
         self.cap.release()
         cv.destroyAllWindows()
+
+    def find_face(self, frame):
+        face = self.detector.detect_faces(frame)
+        if len(face):
+            point1 = (face[0]['box'][0], face[0]['box'][1])
+            point2 = (face[0]['box'][0] + face[0]['box'][2], face[0]['box'][1] + face[0]['box'][3])
+            face_rect_points = [point1, point2]
+            face_img = frame[point1[1] - 10:point2[1] + 10, point1[0] - 10:point2[0] + 10, :] # Нужно сделать % от ширины и высоты лица а не 10px
+            return face_rect_points, face_img
+        else:
+            return False, False
+
+    def face_recognition(self, frame):
+        model = load_model('face_recognition_ep=10.h5')
+        names = ['frolov', 'khudyakov', 'semin']
+        frame = cv.resize(frame, (224, 224))
+        img_array = image.img_to_array(frame)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array /= 255.
+        preds = model.predict(img_array)
+        if np.max(preds) > 0.1:
+            return names[np.argmax(preds)]
+
+    def get_video_recognition(self):
+        while True:
+            ret, frame = self.cap.read()
+            face_rext_points, face_img = GiveMeVideo.find_face(self, frame)
+            if face_rext_points:
+                cv.rectangle(frame, face_rext_points[0], face_rext_points[1], (0, 0, 255), 3)
+                name = GiveMeVideo.face_recognition(self, face_img)
+
+
+
