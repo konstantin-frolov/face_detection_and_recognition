@@ -17,7 +17,7 @@ import numpy as np
 train_dir = 'DataSet\\train'
 test_dir = 'DataSet\\test'
 val_dir = 'DataSet\\val'
-epochs = 10
+epochs = 5
 batch_size = 20
 num_train_samples = 899
 num_test_samples = 100
@@ -47,7 +47,13 @@ vgg19 = VGG19(
     weights='imagenet',
     include_top=False,
     input_shape=(224, 224, 3))
-vgg19.trainable = False
+vgg19.trainable = True
+'''trainable = False
+for layer in vgg19.layers:
+    if layer.name == 'block4_conv1':
+        trainable = True
+    layer.trainable = trainable
+'''
 model = Sequential()
 model.add(vgg19)
 model.add(Flatten())
@@ -56,7 +62,7 @@ model.add(Activation('relu'))
 model.add(Dropout(0.5))
 model.add(Dense(3))
 model.add(Activation('sigmoid'))
-#model.summary()
+model.summary()
 
 model.compile(loss='binary_crossentropy',
               optimizer=Adam(lr=1e-5),
@@ -72,4 +78,4 @@ scores = model.evaluate_generator(test_gen, num_test_samples // batch_size)
 
 print('Точность на тестовых данных составляет: %.2f%%' % (scores[1]*100))
 
-model.save('face_recognition_ep=10.h5')
+model.save('face_recognition_ep=5_with_conv.h5', include_optimizer=False)
