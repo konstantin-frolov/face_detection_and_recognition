@@ -157,24 +157,36 @@ class GiveMeVideo:
         else:
             return False, False
 
-    def face_recognition(self, frame):
-        model = load_model('face_recognition_ep=10.h5')
-        names = ['frolov', 'khudyakov', 'semin']
+    def face_recognition(self, frame, model):
         frame = cv.resize(frame, (224, 224))
         img_array = image.img_to_array(frame)
         img_array = np.expand_dims(img_array, axis=0)
         img_array /= 255.
         preds = model.predict(img_array)
+        print(preds)
+        print(np.argmax(preds))
         if np.max(preds) > 0.1:
-            return names[np.argmax(preds)]
+            #print(np.argmax(preds))
+            return np.argmax(preds)+1
+        else:
+            return 0
 
     def get_video_recognition(self):
+        model = load_model('face_recognition_ep=5_with_conv.h5')
+        names = ["I don't know", 'frolov', 'khudyakov', 'semin']
         while True:
             ret, frame = self.cap.read()
             face_rext_points, face_img = GiveMeVideo.find_face(self, frame)
             if face_rext_points:
                 cv.rectangle(frame, face_rext_points[0], face_rext_points[1], (0, 0, 255), 3)
-                name = GiveMeVideo.face_recognition(self, face_img)
+                name = GiveMeVideo.face_recognition(self, face_img, model)
+                cv.putText(frame, names[name], face_rext_points[1], cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv.LINE_AA)
+            cv.imshow('Video', frame)
+            if cv.waitKey(1) & 0xFF == ord('q'):
+                break
+        self.cap.release()
+        cv.destroyAllWindows()
+
 
 
 
