@@ -3,7 +3,7 @@ import cv2 as cv
 from mtcnn.mtcnn import MTCNN
 from keras.preprocessing import image
 from keras.models import load_model
-from keras.applications.vgg19 import decode_predictions
+from keras.optimizers import SGD, Adam
 
 
 def rotate_img(img, angle, center):
@@ -152,7 +152,7 @@ class GiveMeVideo:
             point1 = (face[0]['box'][0], face[0]['box'][1])
             point2 = (face[0]['box'][0] + face[0]['box'][2], face[0]['box'][1] + face[0]['box'][3])
             face_rect_points = [point1, point2]
-            face_img = frame[point1[1] - 10:point2[1] + 10, point1[0] - 10:point2[0] + 10, :] # Нужно сделать % от ширины и высоты лица а не 10px
+            face_img = frame[point1[1]:point2[1], point1[0]:point2[0], :] # Нужно сделать % от ширины и высоты лица а не 10px
             return face_rect_points, face_img
         else:
             return False, False
@@ -164,15 +164,13 @@ class GiveMeVideo:
         img_array /= 255.
         preds = model.predict(img_array)
         print(preds)
-        print(np.argmax(preds))
         if np.max(preds) > 0.1:
-            #print(np.argmax(preds))
             return np.argmax(preds)+1
         else:
             return 0
 
     def get_video_recognition(self):
-        model = load_model('face_recognition_ep=5_with_conv.h5')
+        model = load_model('face_recognition_ep=10_resnet_with_conv.h5', compile=False)
         names = ["I don't know", 'frolov', 'khudyakov', 'semin']
         while True:
             ret, frame = self.cap.read()
