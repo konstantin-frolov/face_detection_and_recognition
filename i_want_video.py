@@ -164,13 +164,13 @@ class GiveMeVideo:
         img_array /= 255.
         preds = model.predict(img_array)
         print(preds)
-        if np.max(preds) > 0.1:
+        if np.max(preds) > 0.5:
             return np.argmax(preds)+1
         else:
             return 0
 
     def get_video_recognition(self):
-        model = load_model('face_recognition_ep=10_facenet_with_conv.h5', compile=False)
+        model = load_model('face_recognition_ep=7_facenet_with_conv.h5', compile=False)
         names = ["I don't know", 'frolov', 'khudyakov', 'semin']
         while True:
             ret, frame = self.cap.read()
