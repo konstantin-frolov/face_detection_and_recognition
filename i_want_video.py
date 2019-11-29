@@ -170,7 +170,7 @@ class GiveMeVideo:
             return 0
 
     def get_video_recognition(self):
-        model = load_model('face_recognition_ep=7_facenet_with_conv.h5', compile=False)
+        model = load_model('face_recognition_ep=10_facenet_with_conv.h5', compile=False)
         names = ["I don't know", 'frolov', 'khudyakov', 'semin']
         while True:
             ret, frame = self.cap.read()

@@ -18,7 +18,7 @@ import numpy as np
 train_dir = 'DataSet\\train'
 test_dir = 'DataSet\\test'
 val_dir = 'DataSet\\val'
-epochs = 7
+epochs = 10
 batch_size = 17
 num_train_samples = 899
 num_test_samples = 100
@@ -78,7 +78,7 @@ facenet.trainable = True
 #facenet.summary()
 trainable = False
 for layer in facenet.layers:
-    if layer.name == 'Block8_1_Branch_1_Conv2d_0a_1x1':
+    if layer.name == 'Block17_5_Branch_1_Conv2d_0a_1x1':
         trainable = True
     layer.trainable = trainable
     print(layer.name)
@@ -104,7 +104,7 @@ model.summary()
 model.fit_generator(train_gen, steps_per_epoch=num_train_samples // batch_size,
                     epochs=epochs, validation_data=val_gen, validation_steps=num_val_samples)
 
-model.save('face_recognition_ep=7_facenet_with_conv.h5', include_optimizer=False)
+model.save('face_recognition_ep=10_facenet_with_conv.h5', include_optimizer=False)
 
 scores = model.evaluate_generator(test_gen, num_test_samples)
 
