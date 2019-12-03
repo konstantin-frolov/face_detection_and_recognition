@@ -115,7 +115,7 @@ class GiveMeVideo:
     # outputs: nothing
     def get_only_face(self):
         while True:
-            frame, mark_face = GiveMeVideo.get_one_frame(self)
+            frame, points, mark_face = GiveMeVideo.get_one_frame(self)
             cv.imshow('Video', frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -130,7 +130,7 @@ class GiveMeVideo:
     def create_face_dataset(self, user_name, folder_path='DataSet\\all_data', num_files=1000):
         i = 1
         while i < num_files:
-            frame, mark_face = GiveMeVideo.get_one_frame(self)
+            frame, points, mark_face = GiveMeVideo.get_one_frame(self)
             if mark_face:
                 path_to_img = folder_path + user_name + '.' + str(i) + '.jpg'
                 cv.imwrite(path_to_img, frame)
@@ -154,7 +154,14 @@ class GiveMeVideo:
             point2 = (face[0]['box'][0] + face[0]['box'][2],
                       face[0]['box'][1] + face[0]['box'][3])  # bottom right point
             face_points = [point1, point2]                    # two point in list
-            face_img = frame[point1[1]:point2[1], point1[0]:point2[0], :]  # get face_img from frame by face points
+            face_img = frame[point1[1] - 10:point2[1] + 10,
+                             point1[0] - 10:point2[0] + 10, :]  # get face_img from frame by face points
+            # Resize face_img
+            new_width = 224
+            width = abs(point1[0] - point2[0])
+            height = abs(point1[1] - point2[1])
+            new_height = int(new_width * width / height)
+            face_img = cv.resize(face_img, (new_height, new_width))
             return face_points, face_img  # return face points and face_img or False
         else:
             return False, False
@@ -169,6 +176,7 @@ class GiveMeVideo:
         img_array = np.expand_dims(img_array, axis=0)
         img_array /= 255.
         preds = model.predict(img_array)            # put face_img to inputs of your model and get prediction
+        print(preds)
         # get top max from prediction if it more than 0.5
         if np.max(preds) > 0.5:
             return np.argmax(preds) + 1  # return with bias of 1 for correct interpretation of answer list
