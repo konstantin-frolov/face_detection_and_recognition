@@ -96,7 +96,7 @@ class GiveMeVideo:
     # outputs: face_img - image with only face
     #          face_points - list from 2 points top left and bottom right of face
     #          mark_face - True if face is in the frame
-    def get_one_frame(self):
+    def __get_one_frame(self):
         eyes_coor = []
         ret, frame = self.cap.read()
         face = self.detector.detect_faces(frame)
@@ -129,7 +129,7 @@ class GiveMeVideo:
     def get_only_face(self):
         print('Click key "Q" for exit')
         while True:
-            frame, points, mark_face = GiveMeVideo.get_one_frame(self)
+            frame, points, mark_face = GiveMeVideo.__get_one_frame(self)
             cv.imshow('Video', frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -144,7 +144,7 @@ class GiveMeVideo:
     def create_face_dataset(self, user_name, folder_path='DataSet\\all_data', num_files=1000):
         i = 1
         while i < num_files:
-            frame, points, mark_face = GiveMeVideo.get_one_frame(self)
+            frame, points, mark_face = GiveMeVideo.__get_one_frame(self)
             if mark_face:
                 path_to_img = folder_path + user_name + '.' + str(i) + '.jpg'
                 cv.imwrite(path_to_img, frame)
@@ -171,12 +171,6 @@ class GiveMeVideo:
             face_points = [point1, point2]                    # two point in list
             face_img = frame[point1[1] - 10:point2[1] + 10,
                              point1[0] - 10:point2[0] + 10, :]  # get face_img from frame by face points
-            # Resize face_img
-            new_width = 224
-            width = abs(point1[0] - point2[0])
-            height = abs(point1[1] - point2[1])
-            new_height = int(new_width * width / height)
-            face_img = cv.resize(face_img, (new_height, new_width))
             return face_points, face_img  # return face points and face_img or False
         else:
             return False, False
@@ -202,7 +196,7 @@ class GiveMeVideo:
     # inputs: model_name - model with weights in *.h5 file
     # output: nothing
     def get_video_recognition(self, model_name):
-        print('Click keq "Q" for exit')
+        print('Click key "Q" for exit')
         # load model
         model = load_model(model_name, compile=False)
         # Create answer list
