@@ -21,7 +21,7 @@ class GiveMeVideo:
 
     # Method for showing video from camera without changes
     def only_video(self):
-        print('Click keq "Q" for exit')
+        print('Click key "Q" for exit')
         while True:
             ret, frame = self.cap.read()
             cv.imshow('Video', frame)
@@ -32,7 +32,7 @@ class GiveMeVideo:
 
     # Method for detect one face in video with rectangular square around face
     def detect_1_face(self):
-        print('Click keq "Q" for exit')
+        print('Click key "Q" for exit')
         while True:
             ret, frame = self.cap.read()
             face = self.detector.detect_faces(frame)
@@ -51,7 +51,7 @@ class GiveMeVideo:
     # inputs: max_num_people - maximum numbers of people for detecting
     #         num_frames_skip - number of frames skipped for boost work
     def detect_more_faces(self, max_num_people, num_frames_skip):
-        print('Click keq "Q" for exit')
+        print('Click key "Q" for exit')
         count_frame = 0
         while True:
             lst = []
@@ -127,6 +127,7 @@ class GiveMeVideo:
     # inputs: nothing
     # outputs: nothing
     def get_only_face(self):
+        print('Click key "Q" for exit')
         while True:
             frame, points, mark_face = GiveMeVideo.get_one_frame(self)
             cv.imshow('Video', frame)
@@ -154,7 +155,7 @@ class GiveMeVideo:
     # inputs: frame - one frame from camera
     # output: face_points - list from 2 points top left and bottom right of face
     #         face_img - image with only face
-    def find_face(self, frame):
+    def __find_face(self, frame):
         eyes_coor = []
         face = self.detector.detect_faces(frame)
         if len(face):
@@ -184,7 +185,7 @@ class GiveMeVideo:
     # inputs: face_img from find_face, model - your trained model with weights
     # output: index of max(preds) + 1 or 0
     @staticmethod
-    def face_recognition(face_img, model):
+    def __face_recognition(face_img, model):
         face_img = cv.resize(face_img, (160, 160))  # resize face_img for model inputs size
         img_array = image.img_to_array(face_img)    # convert to array, add new axis and scale to 0:1 values
         img_array = np.expand_dims(img_array, axis=0)
@@ -210,11 +211,11 @@ class GiveMeVideo:
         # inf loop for getting frame from camera
         while True:
             ret, frame = self.cap.read()
-            face_rext_points, face_img = GiveMeVideo.find_face(self, frame)  # Getting points of the face
+            face_rext_points, face_img = GiveMeVideo.__find_face(self, frame)  # Getting points of the face
             if face_rext_points:  # If we have face points
                 cv.rectangle(frame, face_rext_points[0], face_rext_points[1],
                              (0, 0, 255), 3)                                 # rectangle around the face
-                name = GiveMeVideo.face_recognition(face_img, model)   # Recognize face
+                name = GiveMeVideo.__face_recognition(face_img, model)   # Recognize face
                 cv.putText(frame, names[name], face_rext_points[1],
                            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2,
                            cv.LINE_AA)                                       # Simple text to the right of the face
