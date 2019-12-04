@@ -14,20 +14,25 @@ def rotate_img(img, angle, center):
 
 
 class GiveMeVideo:
+    # initialize face detector from MTCNN
     def __init__(self):
         self.cap = cv.VideoCapture(0)
         self.detector = MTCNN()
 
+    # Method for showing video from camera without changes
     def only_video(self):
+        print('Click keq "Q" for exit')
         while True:
             ret, frame = self.cap.read()
             cv.imshow('Video', frame)
-            if cv.waitKey(1) & 0xFF == ord('q'):
+            if cv.waitKey(1) & 0xFF == ord('q'): # Click key "Q" for exit
                 break
         self.cap.release()
         cv.destroyAllWindows()
 
+    # Method for detect one face in video with rectangular square around face
     def detect_1_face(self):
+        print('Click keq "Q" for exit')
         while True:
             ret, frame = self.cap.read()
             face = self.detector.detect_faces(frame)
@@ -42,7 +47,11 @@ class GiveMeVideo:
         self.cap.release()
         cv.destroyAllWindows()
 
+    # Method as detect_1_face but detect more faces in the frame
+    # inputs: max_num_people - maximum numbers of people for detecting
+    #         num_frames_skip - number of frames skipped for boost work
     def detect_more_faces(self, max_num_people, num_frames_skip):
+        print('Click keq "Q" for exit')
         count_frame = 0
         while True:
             lst = []
@@ -82,31 +91,35 @@ class GiveMeVideo:
         self.cap.release()
         cv.destroyAllWindows()
 
-    # Method
+    # Method for getting only face_img with initialize camera
+    # inputs: self
+    # outputs: face_img - image with only face
+    #          face_points - list from 2 points top left and bottom right of face
+    #          mark_face - True if face is in the frame
     def get_one_frame(self):
         eyes_coor = []
         ret, frame = self.cap.read()
         face = self.detector.detect_faces(frame)
         if len(face):
-            # Дернем координаты глаз и рассчитаем угол
+            # retrieving eye coordinates and calculating the angle between the horizontal line and the eye line
             eyes_coor.append(face[0]['keypoints']['right_eye'])
             eyes_coor.append(face[0]['keypoints']['left_eye'])
             angle = 180 / np.pi * np.arctan(
                 (eyes_coor[0][1] - eyes_coor[1][1]) / (eyes_coor[0][0] - eyes_coor[1][0]))
-            # Повернем изображение, чтобы линия глаз была горизонтальной
+            # rotate img around nose point
             frame = rotate_img(frame, angle, face[0]['keypoints']['nose'])
-            # Выдернем только лицо со всей картинки
+            # cut only face from frame
             point1 = (face[0]['box'][0], face[0]['box'][1])
             point2 = (face[0]['box'][0] + face[0]['box'][2], face[0]['box'][1] + face[0]['box'][3])
             face_points = [point1, point2]
-            frame = frame[point1[1] - 10:point2[1] + 10, point1[0] - 10:point2[0] + 10, :]
-            # масштабируем под размер 300 px
+            face_img = frame[point1[1] - 10:point2[1] + 10, point1[0] - 10:point2[0] + 10, :]
+            # scale face_img to new_width and new_height
             new_width = 224
             width = abs(point1[0] - point2[0])
             height = abs(point1[1] - point2[1])
             new_height = int(new_width * width / height)
-            frame = cv.resize(frame, (new_height, new_width))
-            return frame, face_points, 1
+            face_img = cv.resize(face_img, (new_height, new_width))
+            return face_img, face_points, 1
         else:
             return frame, None, 0
 
@@ -140,6 +153,7 @@ class GiveMeVideo:
     # Method for getting one face_img for recognizing and face points from one frame using MTCCN
     # inputs: frame - one frame from camera
     # output: face_points - list from 2 points top left and bottom right of face
+    #         face_img - image with only face
     def find_face(self, frame):
         eyes_coor = []
         face = self.detector.detect_faces(frame)
@@ -187,6 +201,7 @@ class GiveMeVideo:
     # inputs: model_name - model with weights in *.h5 file
     # output: nothing
     def get_video_recognition(self, model_name):
+        print('Click keq "Q" for exit')
         # load model
         model = load_model(model_name, compile=False)
         # Create answer list
