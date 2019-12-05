@@ -47,3 +47,31 @@ After using this method for all recognition users, you have folders with images 
 This method has 1 input and no outputs. Use this method for show video after detecting and recognition only one face using Keras model in *h5 file.  
 input:
 * ``model_name`` - path to your trained model for recognition faces in format ``path\\to\\you\\model\\model_name.h5``
+### Private methods:
+#### ``GiveMeVideo.__get_one_frame``  
+Method has no inputs and 3 outputs. It is used to detect the face in the frame, if it is detected, crop the face from the image, add the coordinates of the face in the tuple (upper left point and lower right corner) and change the face detection mark to True.
+outputs:
+* ``face_img`` - only face into image;
+* ``face_points`` - the coordinates of the face in the tuple (upper left point and lower right corner). If face don't detect is ``None``;
+* ``face_detection_mark`` - If face detect is ``True``. Else - ``False``  
+
+#### ``GiveMeVideo.__find_face(frame)``  
+Method has 1 input and 2 outputs. This methods works like ``__get_one_frame`` without initializing the camera. You need to give an image frame to the input of this method.  
+input:
+* ``frame`` - frame image from camera.  
+
+outputs:
+* ``face_points`` - the coordinates of the face in the tuple (upper left point and lower right corner). If face don't detect is ``False``;
+* ``face_img`` - only face into image. If face don't detect is ``False``.  
+
+#### ``GiveMeVideo.__face_recognition(face_img, model)``  
+Method has 2 inputs and 1 output. It is used to recognize face from face_img and return the index of the maximum element in the prediction list.  
+inputs:
+* ``face_img`` - only face into image;  
+* ``model`` - object of your loaded and compiled Keras model.  
+
+outputs:
+* ``pred_index`` - index of the maximum element in the prediction list.  
+
+## class WorkWithModel  
+Information in developing
