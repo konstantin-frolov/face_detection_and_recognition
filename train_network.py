@@ -3,17 +3,8 @@ from keras.layers import Dense, Activation, Dropout, Flatten
 from keras.applications.vgg19 import VGG19
 from keras.applications.resnet50 import ResNet50
 from keras.preprocessing import image
-from keras.optimizers import Adam, SGD
-from keras.applications.resnet50 import preprocess_input, decode_predictions
-import cv2 as cv
-import numpy as np
+from keras.optimizers import SGD
 
-#frame, k = vid.get_one_frame()
-#cv.imwrite('DataSet\\test\\frolov.91.jpg', frame)
-#frame = cv.resize(frame, (224, 224))
-#cv.destroyAllWindows()
-#cv.imshow('Video', frame)
-#img = image.load_img('DataSet\\test\\frolov.91.jpg', target_size=(224, 224))
 
 train_dir = 'DataSet\\train'
 test_dir = 'DataSet\\test'
