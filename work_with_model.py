@@ -2,9 +2,7 @@ import os
 import shutil
 import numpy as np
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Activation, Dropout, Flatten
-from keras.applications.vgg19 import VGG19
-from keras.applications.resnet50 import ResNet50
+from keras.layers import Dense, Activation, Dropout
 from keras.preprocessing import image
 from keras.optimizers import SGD
 
@@ -63,8 +61,17 @@ class WorkWithModel:
             os.rename(src, new_names)
             count += 1
 
+    # Method for training neuronet
+    # inputs: path2train_dir - path to dir with train data
+    #         path2test_dir - path to dir with test data
+    #         path2val_dir - path to dir with validation data
+    #         epochs - numbers epochs for training
+    #         batch_size - size of batch for training
+    #         learn_rate - learning rate for optimizer
+    #         save_model_name - name of model for saving
+    # output: nothing
     @staticmethod
-    def train_network(path2train_dir, path2test_dir, path2val_dir, epochs, batch_size, save_model_name, learn_rate):
+    def train_network(path2train_dir, path2test_dir, path2val_dir, epochs, batch_size, learn_rate, save_model_name):
         names = os.listdir(path2test_dir)
         num_train_samples = len(os.listdir(os.path.join(path2train_dir, names[0])))
         num_test_samples = len(os.listdir(os.path.join(path2test_dir, names[0])))
@@ -137,4 +144,4 @@ model = WorkWithModel()
 path2train_dir = 'DataSet\\train'
 path2test_dir = 'DataSet\\test'
 path2val_dir = 'DataSet\\val'
-model.train_network(path2train_dir, path2test_dir, path2val_dir, 3, 17, 'test.h5', 1e-4)
+model.train_network(path2train_dir, path2test_dir, path2val_dir, 3, 17, 1e-4, 'test.h5')
