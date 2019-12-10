@@ -112,7 +112,10 @@ class GiveMeVideo:
             point1 = (face[0]['box'][0], face[0]['box'][1])
             point2 = (face[0]['box'][0] + face[0]['box'][2], face[0]['box'][1] + face[0]['box'][3])
             face_points = [point1, point2]
-            face_img = frame[point1[1] - 10:point2[1] + 10, point1[0] - 10:point2[0] + 10, :]
+            delta_width = int(0.05 * (point2[1] - point1[1]))
+            delta_height = int(0.05 * (point2[0] - point1[0]))
+            face_img = frame[point1[1] - delta_width: point2[1] + delta_width,  # get face_img from frame by face points
+                             point1[0] - delta_height: point2[0] + delta_height, :]
             # scale face_img to new_width and new_height
             new_width = 224
             width = abs(point1[0] - point2[0])
@@ -169,8 +172,10 @@ class GiveMeVideo:
             point2 = (face[0]['box'][0] + face[0]['box'][2],
                       face[0]['box'][1] + face[0]['box'][3])  # bottom right point
             face_points = [point1, point2]                    # two point in list
-            face_img = frame[point1[1] - 10:point2[1] + 10,
-                             point1[0] - 10:point2[0] + 10, :]  # get face_img from frame by face points
+            delta_width = int(0.05 * (point2[1]-point1[1]))
+            delta_height = int(0.05 * (point2[0]-point1[0]))
+            face_img = frame[point1[1] - delta_width: point2[1] + delta_width,  # get face_img from frame by face points
+                             point1[0] - delta_height: point2[0] + delta_height, :]
             return face_points, face_img  # return face points and face_img or False
         else:
             return False, False
