@@ -180,15 +180,18 @@ class GiveMeVideo:
     # output: index of max(preds) + 1 or 0
     @staticmethod
     def __face_recognition(face_img, model):
-        face_img = cv.resize(face_img, (160, 160))  # resize face_img for model inputs size
-        img_array = image.img_to_array(face_img)    # convert to array, add new axis and scale to 0:1 values
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array /= 255.
-        preds = model.predict(img_array)            # put face_img to inputs of your model and get prediction
-        print(preds)
-        # get top max from prediction if it more than 0.5
-        if np.max(preds) > 0.5:
-            return np.argmax(preds) + 1  # return with bias of 1 for correct interpretation of answer list
+        if face_img.shape[0] & face_img.shape[1]:
+            face_img = cv.resize(face_img, (160, 160))  # resize face_img for model inputs size
+            img_array = image.img_to_array(face_img)    # convert to array, add new axis and scale to 0:1 values
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array /= 255.
+            preds = model.predict(img_array)            # put face_img to inputs of your model and get prediction
+            print(preds)
+            # get top max from prediction if it more than 0.5
+            if np.max(preds) > 0.5:
+                return np.argmax(preds) + 1  # return with bias of 1 for correct interpretation of answer list
+            else:
+                return 0
         else:
             return 0
 
