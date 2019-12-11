@@ -66,8 +66,8 @@ resnet.trainable = True
 facenet = load_model('keras-facenet\\model\\facenet_keras.h5')
 facenet.load_weights('keras-facenet\\weights\\facenet_keras_weights.h5')
 facenet.trainable = True
-#facenet.summary()
-trainable = False
+facenet.summary()
+'''trainable = False
 for layer in facenet.layers:
     if layer.name == 'Block17_5_Branch_1_Conv2d_0a_1x1':
         trainable = True
@@ -99,4 +99,4 @@ model.save('face_recognition_ep=10_facenet_with_conv.h5', include_optimizer=Fals
 
 scores = model.evaluate_generator(test_gen, num_test_samples)
 
-print('Точность на тестовых данных составляет: %.2f%%' % (scores[1]*100))
+print('Точность на тестовых данных составляет: %.2f%%' % (scores[1]*100))'''
