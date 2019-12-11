@@ -229,6 +229,41 @@ class GiveMeVideo:
         self.cap.release()
         cv.destroyAllWindows()
 
+    def get_video_recognition_skip_frames(self, model_name, num_skip_frames):
+        print('Click key "Q" for exit')
+        # load model
+        model = load_model(model_name, compile=False)
+        # Create answer list
+        names = ["I don't know"]
+        names.extend(listdir('DataSet\\all_data'))
+        count_frame = 0
+        # inf loop for getting frame from camera
+        while True:
+            if count_frame == num_skip_frames:
+                count_frame = 0
+            ret, frame = self.cap.read()
+            if not count_frame:
+                face_rext_points, face_img = GiveMeVideo.__find_face(self, frame)  # Getting points of the face
+                if face_rext_points:  # If we have face points
+                    cv.rectangle(frame, face_rext_points[0], face_rext_points[1],
+                                 (0, 0, 255), 3)                                 # rectangle around the face
+                    name = GiveMeVideo.__face_recognition(face_img, model)   # Recognize face
+                    cv.putText(frame, names[name], face_rext_points[1],
+                               cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2,
+                               cv.LINE_AA)                                       # Simple text to the right of the face
+            elif face_rext_points:
+                cv.rectangle(frame, face_rext_points[0], face_rext_points[1],
+                             (0, 0, 255), 3)                                  # rectangle around the face
+                cv.putText(frame, names[name], face_rext_points[1],
+                           cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2,
+                           cv.LINE_AA)  # Simple text to the right of the face
+            cv.imshow('Video', frame)                                        # Show processed frame
+            count_frame += 1
+            # If click on key "Q" - exit
+            if cv.waitKey(1) & 0xFF == ord('q'):
+                break
+        self.cap.release()
+        cv.destroyAllWindows()
 
 
 
