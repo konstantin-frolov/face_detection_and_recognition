@@ -193,7 +193,7 @@ class GiveMeVideo:
             preds = model.predict(img_array)            # put face_img to inputs of your model and get prediction
             print(preds)
             # get top max from prediction if it more than 0.5
-            if np.max(preds) > 0.5:
+            if np.max(preds) > 0.7:
                 return np.argmax(preds) + 1  # return with bias of 1 for correct interpretation of answer list
             else:
                 return 0
